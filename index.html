@@ -61,10 +61,6 @@ body {
   100% { top: 100%; transform: translateX(-15vw) rotateX(180deg) rotateY(360deg); }
 }
 
-@media (max-width: 480px) {
-  .sakura span { width: 2vw; height: 1vw; }
-}
-
 /* Верхняя надпись */
 .header-text {
   text-align: center;
@@ -149,6 +145,11 @@ button:active { transform: scale(0.97); opacity: 0.9; }
   display: none;
   font-weight: 600;
 }
+
+/* мобильные лепестки крупнее */
+@media (max-width: 480px) {
+  .sakura span { width: 2.4vw; height: 1.7vw; }
+}
 </style>
 </head>
 <body>
@@ -183,7 +184,7 @@ button:active { transform: scale(0.97); opacity: 0.9; }
 </div>
 
 <script>
-// копирование
+// функция копирования
 function copy(id) {
   const text = document.getElementById(id).innerText;
   navigator.clipboard.writeText(text).then(() => {
@@ -202,12 +203,14 @@ function populateFromURL() {
   if(pin) document.getElementById('pin').innerText = pin;
 }
 
-// генерируем 50 лепестков сакуры
+// генерируем лепестки сакуры с адаптацией для мобильных
 function generateSakura() {
   const container = document.getElementById('sakura-container');
-  for(let i=0; i<50; i++){
+  const isMobile = window.innerWidth <= 480;
+  const count = isMobile ? 25 : 50; // меньше лепестков на телефоне
+  for(let i=0; i<count; i++){
     const span = document.createElement('span');
-    span.style.left = (i*2) + '%';
+    span.style.left = (i*(100/count)) + '%';
     span.style.animationName = i % 2 === 0 ? 'sakura-anim-1' : 'sakura-anim-2';
     span.style.animationDuration = (5 + Math.random()*10) + 's';
     span.style.animationDelay = (Math.random()*5) + 's';
