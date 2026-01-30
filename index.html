@@ -148,7 +148,7 @@ button:active { transform: scale(0.97); opacity: 0.9; }
 
 /* мобильные лепестки крупнее */
 @media (max-width: 480px) {
-  .sakura span { width: 2.4vw; height: 1.7vw; }
+  .sakura span { width: 3.2vw; height: 1.6vw; }
 }
 </style>
 </head>
@@ -207,7 +207,7 @@ function populateFromURL() {
 function generateSakura() {
   const container = document.getElementById('sakura-container');
   const isMobile = window.innerWidth <= 480;
-  const count = isMobile ? 25 : 50; // меньше лепестков на телефоне
+  const count = isMobile ? 15 : 50; // меньше лепестков на телефоне
   for(let i=0; i<count; i++){
     const span = document.createElement('span');
     span.style.left = (i*(100/count)) + '%';
