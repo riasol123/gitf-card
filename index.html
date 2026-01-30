@@ -18,12 +18,15 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow-x: hidden; /* убираем горизонтальный скролл */
+  overflow-x: hidden;
 }
 
 body {
   background: #89A064;
   font-family: 'Nunito', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* падающая сакура */
@@ -45,7 +48,8 @@ body {
   height: 0.5vw;
   border-radius: 5% 80% 10% 80%;
   background-color: #ffb6c1;
-  animation: sakura-fall linear infinite;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
 }
 
 @keyframes sakura-anim-1 {
@@ -57,14 +61,18 @@ body {
   100% { top: 100%; transform: translateX(-15vw) rotateX(180deg) rotateY(360deg); }
 }
 
-/* Верхняя надпись вне карточки */
+@media (max-width: 480px) {
+  .sakura span { width: 2vw; height: 1vw; }
+}
+
+/* Верхняя надпись */
 .header-text {
   text-align: center;
   font-size: 30px;
   font-weight: 700;
   color: #ffffff;
   margin-top: 5vh;
-  margin-bottom: 4vh; /* расстояние до карточки */
+  margin-bottom: 4vh;
   z-index: 1;
   position: relative;
 }
@@ -76,7 +84,7 @@ body {
   align-items: center;
   padding: 0 16px 5vh 16px;
   position: relative;
-  z-index: 1; /* поверх лепестков */
+  z-index: 1;
 }
 
 .card {
@@ -129,14 +137,9 @@ button {
   justify-content: center;
 }
 
-button i {
-  color: #ffffff;
-}
+button i { color: #ffffff; }
 
-button:active {
-  transform: scale(0.97);
-  opacity: 0.9;
-}
+button:active { transform: scale(0.97); opacity: 0.9; }
 
 .copied {
   text-align: center;
@@ -146,45 +149,24 @@ button:active {
   display: none;
   font-weight: 600;
 }
-
-/* мобильные лепестки больше */
-@media (max-width: 480px) {
-  .sakura span {
-    width: 2vw;
-    height: 1vw;
-  }
-}
 </style>
 </head>
 <body>
 
 <!-- падающая сакура -->
-<div class="sakura">
-  <span style="left:1%; animation-name:sakura-anim-1; animation-duration:8s; animation-delay:0s;"></span>
-  <span style="left:5%; animation-name:sakura-anim-2; animation-duration:10s; animation-delay:1s;"></span>
-  <span style="left:10%; animation-name:sakura-anim-1; animation-duration:9s; animation-delay:2s;"></span>
-  <span style="left:15%; animation-name:sakura-anim-2; animation-duration:12s; animation-delay:3s;"></span>
-  <span style="left:20%; animation-name:sakura-anim-1; animation-duration:11s; animation-delay:4s;"></span>
-  <span style="left:25%; animation-name:sakura-anim-2; animation-duration:10s; animation-delay:0.5s;"></span>
-  <span style="left:30%; animation-name:sakura-anim-1; animation-duration:9s; animation-delay:1.5s;"></span>
-  <span style="left:35%; animation-name:sakura-anim-2; animation-duration:11s; animation-delay:2.5s;"></span>
-  <span style="left:40%; animation-name:sakura-anim-1; animation-duration:12s; animation-delay:3.5s;"></span>
-  <span style="left:45%; animation-name:sakura-anim-2; animation-duration:8s; animation-delay:4.5s;"></span>
-</div>
+<div class="sakura" id="sakura-container"></div>
 
 <!-- Верхняя надпись -->
 <div class="header-text">Сертификат lamoda</div>
 
 <!-- карточка -->
-<div class="wrapper">
+<div class="wrapper" id="card-section">
   <div class="card">
     <div class="field">
       <div class="label">Номер сертификата</div>
       <div class="value-row">
         <div class="value" id="code">GIFT000000-0000</div>
-        <button onclick="copy('code')">
-          <i class="fa-solid fa-copy"></i>
-        </button>
+        <button onclick="copy('code')"><i class="fa-solid fa-copy"></i></button>
       </div>
     </div>
 
@@ -192,9 +174,7 @@ button:active {
       <div class="label">Пин-код</div>
       <div class="value-row">
         <div class="value" id="pin">0000</div>
-        <button onclick="copy('pin')">
-          <i class="fa-solid fa-copy"></i>
-        </button>
+        <button onclick="copy('pin')"><i class="fa-solid fa-copy"></i></button>
       </div>
     </div>
 
@@ -203,6 +183,7 @@ button:active {
 </div>
 
 <script>
+// копирование
 function copy(id) {
   const text = document.getElementById(id).innerText;
   navigator.clipboard.writeText(text).then(() => {
@@ -211,6 +192,34 @@ function copy(id) {
     setTimeout(() => note.style.display = 'none', 1400);
   });
 }
+
+// подставляем код и PIN из URL
+function populateFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const pin = params.get('pin');
+  if(code) document.getElementById('code').innerText = code;
+  if(pin) document.getElementById('pin').innerText = pin;
+}
+
+// генерируем 50 лепестков сакуры
+function generateSakura() {
+  const container = document.getElementById('sakura-container');
+  for(let i=0; i<50; i++){
+    const span = document.createElement('span');
+    span.style.left = (i*2) + '%';
+    span.style.animationName = i % 2 === 0 ? 'sakura-anim-1' : 'sakura-anim-2';
+    span.style.animationDuration = (5 + Math.random()*10) + 's';
+    span.style.animationDelay = (Math.random()*5) + 's';
+    container.appendChild(span);
+  }
+}
+
+// запускаем при загрузке
+window.onload = () => {
+  populateFromURL();
+  generateSakura();
+};
 </script>
 
 </body>
