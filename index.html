@@ -197,8 +197,8 @@ function copy(id) {
 // подставляем код и PIN из URL
 function populateFromURL() {
   const params = new URLSearchParams(window.location.search);
-  const code = params.get('cod');
-  const pin = params.get('pi');
+  const code = params.get('code');
+  const pin = params.get('pin');
   if(code) document.getElementById('code').innerText = code;
   if(pin) document.getElementById('pin').innerText = pin;
 }
